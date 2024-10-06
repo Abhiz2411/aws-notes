@@ -1,0 +1,618 @@
+### Backlog notes of AWS
+
+## Types of cloud:
+-> 
+	A] Public cloud: Anyone can access the cloud over the internet
+	B] Private cloud: Only people within the a specific network can access it
+	C] Hybrid cloud: Some non-sensitive data can be accessed by anyone over internet while sensitive data
+					is maintained in the private cloud with limited access
+
+-----------------------------------------------------------------------------------------------------------------				
+
+## AWS pricing mechanism:
+->	AWS will charge for below 3 things
+	A] Compute
+	B] Storage
+	C] Data transfer(How much data sent out from the server)
+-----------------------------------------------------------------------------------------------------------------
+
+## AWS Regions, Availablity zones and Data centers:
+-> 	1. Regions
+	Definition: An AWS Region is a physical geographic location in the world where AWS has multiple, isolated locations known as Availability Zones.
+
+	Key Characteristics:
+
+	Global Presence: AWS has multiple Regions around the world, each designed to be completely isolated from the others to achieve the greatest possible fault tolerance and stability.
+	Data Sovereignty: Customers can choose a Region based on their data sovereignty requirements, as data stored in one Region does not leave that Region unless explicitly configured.
+	Latency and Proximity: Choosing a Region close to your end users can reduce latency and improve performance.
+	Unique Services and Pricing: Some AWS services or features may be available only in specific Regions, and pricing can vary between Regions.
+	Examples:
+
+	US East (N. Virginia) - us-east-1
+	EU (Frankfurt) - eu-central-1
+	Asia Pacific (Mumbai) - ap-south-1
+	
+	2. Availability Zones (AZs)
+	Definition: An Availability Zone is one or more discrete data centers with redundant power, networking, and connectivity in an AWS Region. Each AZ is isolated, but the AZs in a Region are connected through low-latency links.
+
+	Key Characteristics:
+
+	Isolation and Redundancy: AZs are physically separated within a metropolitan region, reducing the risk of multiple AZs failing simultaneously. This ensures high availability and fault tolerance.
+	Networking: AZs within the same Region are connected by high-speed, private fiber-optic networking, allowing applications to achieve low-latency replication and failover.
+	High Availability: Deploying applications across multiple AZs within a Region ensures that they remain available even if one AZ experiences an issue.
+	Examples:
+
+	In the us-east-1 Region, there are multiple AZs like us-east-1a, us-east-1b, us-east-1c, etc.
+	These AZs are distinct data centers within the same geographical area, but they are separated by significant distances to avoid single points of failure.
+	
+	3. Data Centers
+	Definition: A Data Center is a physical facility that houses the IT infrastructure (servers, storage, networking equipment) used to provide cloud services. In AWS, each Availability Zone is composed of one or more Data Centers.
+
+	Key Characteristics:
+
+	Foundation of AZs: Data Centers are the building blocks of Availability Zones. Each AZ typically consists of multiple Data Centers.
+	Redundancy and Resilience: Data Centers in an AZ are built with redundancy in power, networking, and cooling to ensure continuous operation.
+	Security: AWS Data Centers are highly secure, with multiple layers of physical and digital security measures in place to protect the infrastructure and data.
+	Examples:
+
+	A single Availability Zone might consist of multiple Data Centers that are geographically close but isolated enough to prevent a localized disaster (like a flood or fire) from affecting all the Data Centers in that AZ.
+	How They Work Together
+	Regions: AWS's global footprint is organized into Regions, each a distinct geographical area with multiple Availability Zones. When you deploy an application or service, you choose a Region based on factors like proximity to users, compliance, and available services.
+
+	Availability Zones: Within a Region, there are multiple Availability Zones. These are independent locations that you can use to deploy applications in a highly available and fault-tolerant manner. If you deploy your application across multiple AZs, it can continue to operate even if one AZ goes down.
+
+	Data Centers: Each Availability Zone is composed of multiple Data Centers. These are the physical facilities where the actual computing resources reside. The redundancy and isolation at the Data Center level ensure that even within an AZ, your applications can be resilient against localized failures.
+
+	Summary
+	Regions: Geographically separate locations that contain multiple Availability Zones.
+	Availability Zones: Isolated locations within a Region that contain one or more Data Centers, designed to be resilient and provide high availability.
+	Data Centers: Physical facilities within an AZ that house the servers, storage, and networking equipment powering AWS services.
+	Understanding the relationship between these components is essential for architecting robust, highly available, and fault-tolerant applications in AWS.
+-----------------------------------------------------------------------------------------------------------------
+
+## Why need for AWS region, availability zones?
+-> 
+	# Region:
+	1) Low latency for all users by reducing the distance
+	2) Govt. laws prohibiting data to reamin in own nation
+	3) Cost reduction(Electricity,labour costs varry geographically)
+	
+	# Availability zones:
+	1) Disaster management
+	2) Fault tolerance 
+	
+	Copies of our data is backuped in the availability zones
+-----------------------------------------------------------------------------------------------------------------
+
+### IF WE TERMINATE THE INSTANCE THEN THE VOLUME RELATED TO THE INSTANCE IS ALSO DELETED BY DEFAULT ###
+-----------------------------------------------------------------------------------------------------------------
+
+### BOOTSTRAP SCRIPT 
+--> 
+	1) In AWS, a bootstrap script is a script that runs automatically when an EC2 instance starts for the first 
+	   time
+	2) This script is typically used to perform initial setup and configuration tasks on the instance.
+	3) The bootstrap script can be used to install software, configure services, update the system, or perform 
+	   any other tasks needed to prepare the instance for its intended use.
+	   
+	User Data:
+	1) The most common way to run a bootstrap script on an EC2 instance is through the "User Data" field when 
+	   launching an instance. You can provide the script directly in this field.
+    2) User data scripts are executed as root during the instance’s first boot.
+	
+-----------------------------------------------------------------------------------------------------------------
+
+### SECURITY GROUP ###
+--> Security group acts as a firewall which can be used to allow inbound and outbound traffic to the instances
+	
+	Security Groups in AWS are virtual firewalls that control inbound and outbound traffic for EC2 instances 
+	(and some other AWS resources). Here are the key points:
+	
+	1) Function: They act as a network-level filter, allowing or denying traffic based on protocols, ports, 
+	             and IP addresses.
+	
+	2) Stateful: Security Groups are stateful, meaning if you allow inbound traffic, the corresponding outbound 
+	             traffic is automatically allowed, and vice versa.
+	
+	3) Rules: You can specify allow rules, but not deny rules. All traffic is denied by default unless explicitly 
+	          allowed.
+	
+	4) Scope: They operate at the instance level, controlling traffic to and from individual EC2 instances.
+	
+	5) Multiple associations: A single instance can be associated with multiple Security Groups, and a Security 
+	                          Group can be associated with multiple instances.
+	
+	6) Flexibility: Rules can be modified at any time, with changes taking effect immediately.
+	
+-----------------------------------------------------------------------------------------------------------------
+
+### WE CAN CAHNGE THE SECURITY GROUP OF AN INSTANCE WHILE THE INSTANCE IS IN RUNNING STATE ####
+
+-----------------------------------------------------------------------------------------------------------------
+
+### WE CAN ATTACH MULTIPLE SECURITY GROUP TO SINGLE INSTANCE ###
+### ONE SECURTIY GROUP CAN BE ATTACHED TO MULTIPLE INSTANCES ###
+### IT IS ALWAYS ADVICED TO KEEP SEPERATE SECURITY GROUP FOR SSH AND FOR APPLICATION PORTS ###
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Top level Instance types 
+-->
+	AWS offers several instance purchasing options to cater to different use cases and budget requirements. 
+	Here's a brief explanation of each type:
+
+	1) On-Demand Instances:
+
+	1.1) Pay for compute capacity by the second with no long-term commitments.
+	1.2) Ideal for short-term, spiky, or unpredictable workloads.
+	1.3) Highest cost per hour but offers maximum flexibility.
+
+
+	2) Reserved Instances (RI):
+
+	2.1) Provide a significant discount compared to On-Demand pricing.
+	2.2) Require a commitment of 1 or 3 years.
+	2.3) Best for applications with steady-state usage.
+	2.4) Three payment options: All Upfront, Partial Upfront, and No Upfront.
+
+
+	3) Spot Instances:
+
+	3.1) Allow you to request spare EC2 computing capacity at steep discounts.
+	3.2) Prices fluctuate based on supply and demand.
+	3.3) Can be terminated by AWS with short notice if capacity is needed elsewhere.
+	3.4) Ideal for flexible start and end times, or for applications that can handle interruptions.
+
+
+	4) Dedicated Hosts:
+
+	4.1) Physical servers dedicated for your use.
+	4.2) Provide visibility and control over how instances are placed on the server.
+	4.3) Can help address compliance requirements and reduce costs by using your existing server-bound software licenses.
+	4.4) Useful for regulatory requirements that may not support multi-tenant virtualization.
+
+	Each of these instance types serves different needs in terms of cost optimization, performance, and specific 
+	workload requirements. The choice depends on factors like the nature of your application, budget constraints,
+	and compliance needs.
+	
+-----------------------------------------------------------------------------------------------------------------
+
+### Launching Windows instance 
+-->	
+	1) Select 'Windows' as our preferred AMI
+	2) Recommended instance type is 't2.medium'
+	
+	# Note: t2.medium is not free 
+	
+-----------------------------------------------------------------------------------------------------------------
+
+### Connecting to Windows instance 
+--> We can connect to the windows instance using RDP(Remote Desktop Protocol), a protocol developed and propietry
+	to windows
+	
+	RDP provides GUI unlike SSH CLI approach
+	
+	RDP default port is 3389
+	
+	Make sure inbound rule for port `3389` port is enabled
+	
+	1) Connecting to Windows instance from Windows:
+	--> A] We can install RDP client from aws and decrypt the .pem file to get the password 
+		B] Then by uisng RDP client we can connect to the windows instance
+		
+	2) Connecting to Windows instance from Linux:
+	--> A] If you are using Linux distro using wsl then make sure your wsl version is wsl2, if not then update
+		B] Install a remote desktop client like remmina using cmd:
+		   `sudo apt-get install remmina`
+		C] Open remmina gui using command:
+		   `remmina`
+		D] Enter the public IPv4 address of the windows instance, username as 'Administator' and password
+		
+-----------------------------------------------------------------------------------------------------------------
+
+### CURL
+--> Cleint URL
+	
+	curl (Client URL) is a command-line tool used to transfer data to and from servers. It supports a wide range 
+	of protocols including HTTP, HTTPS, FTP, FTPS, SCP, SFTP, SMTP, and more. 
+	curl is commonly used to make requests to URLs or APIs, download files, or send data to web servers.
+	
+	1) URL Requests:
+		You can use curl to perform HTTP or HTTPS requests, such as GET, POST, PUT, DELETE, etc.
+		`curl https://example.com`
+	
+	2) Data Transfer:
+		curl can upload and download files to/from a server. For example, downloading a file:
+		`curl -O https://example.com/file.txt`
+		
+	3) Handling Authentication::
+		curl supports a variety of authentication methods such as basic, digest, and token-based authentication.
+		`curl -u username:password https://example.com/protected-resource`
+		
+	# Common Use Cases:
+	1) Testing APIs: Developers use curl to test RESTful APIs by making HTTP requests to endpoints.
+	2) Downloading Files: curl can be used to download files directly from the command line.
+	3) Fetching Web Pages: You can use curl to retrieve and display web pages.
+	4) Data Transfer Automation: Automate data transfer tasks like uploading files to FTP/SFTP servers.
+	5) Monitoring and Debugging: Use curl to inspect HTTP headers, debug web server behavior, or check network connectivity.
+	
+	# Summary:
+	curl is a versatile and widely used tool for interacting with servers over various network protocols. 
+	It's especially useful for making HTTP requests, testing APIs, downloading/uploading files, and automating 
+	data transfers.
+		
+-----------------------------------------------------------------------------------------------------------------
+
+### How to access meta-data and dynamic data 
+-->  To access metadata and dynamic data on an AWS EC2 instance, you'll interact with the Instance Metadata 
+	 Service (IMDS), typically using curl. Metadata provides information about the instance, while dynamic data 
+	 offers information about the instance's configuration and state at runtime.
+	 
+	 1. Understanding the Structure:
+		A] Metadata: Contains information about the instance itself, such as the instance ID, AMI ID, hostname, 
+		   and more.
+		
+		B] Dynamic Data: Contains data that can change as the instance runs, such as instance identity documents 
+		   and instance profile information.
+
+	 2. Accessing Metadata and Dynamic Data with IMDSv2:
+		If your instance is configured to use IMDSv2 (which requires a session token), you'll need to follow a 
+		slightly different process.
+		
+		Step 1: Obtain a Session Token:
+		`TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"``
+		
+		Step 2: Use the Token to Access Metadata:
+		```
+		# Get a list of all available metadata
+		curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/
+		# Example: Get the instance ID
+		curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id
+		# Example: Get the public IPv4 address
+		curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4
+		```
+		
+		Step 3: Use the Token to Access Dynamic Data
+		```
+		# Get a list of all available dynamic data
+		curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/
+		# Example: Get the instance identity document
+		curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/dynamic/instance-identity/document
+		```
+-----------------------------------------------------------------------------------------------------------------
+
+### How to use `curl http://169.254.169.254/` to write bootstrap script
+--> 
+	Steps to Write a Bootstrap Script Using IMDSv2:
+	
+	1) Obtain a Session Token: First, your script needs to request a session token from the Instance Metadata 
+								Service.
+
+	2) Access Metadata Using the Token: Use the token to query the metadata service for the information you need.
+
+	3) Perform Initialization Tasks: Use the retrieved metadata to perform initialization tasks, such as 
+									configuring your instance, installing software, or setting environment 
+									variables.
+									
+	```
+	#!/bin/bash
+
+	# Obtain a session token for IMDSv2
+	TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+	# Retrieve the instance ID using the session token
+	INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+
+	# Output the instance ID to a log file (or use it for further configuration)
+	echo "This instance ID is $INSTANCE_ID" >> /var/log/instance-id.log
+
+	# Example: Use instance ID to tag the instance (optional, requires AWS CLI installed and configured)
+	# aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=MyInstance
+
+	# Install packages or run commands as part of your instance initialization
+	# Example: Update the system and install Apache web server
+	sudo apt-get update -y
+	sudo apt-get install apache2 -y
+
+	# Start Apache
+	sudo systemctl start apache2
+	sudo systemctl enable apache2
+
+	# Any other bootstrap tasks can go here...
+
+	```
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Elastic IP overview:
+-->
+	An Elastic IP (EIP) in AWS is a static, public IPv4 address designed for dynamic cloud computing. 
+	Unlike traditional IP addresses, which can change if an instance is stopped and restarted, Elastic IPs 
+	allow you to maintain a consistent IP address even when you stop and start your EC2 instances. This is 
+	particularly useful for applications that require a fixed public IP address for users or external systems 
+	to connect reliably.
+
+	# Key Features:
+	
+	1) Static IP: 
+	--> Elastic IP remains constant even if the associated EC2 instance is stopped and restarted.
+	
+	2) Reassignment: 
+	--> You can easily remap an Elastic IP to another instance in the same AWS region in case of instance failure 
+	    or for load balancing purposes.
+	
+	3)Resource Optimization: 
+	--> Since public IPv4 addresses are limited, AWS encourages efficient use of Elastic IPs through its pricing 
+	    model.
+	
+	4) Elastic IP Charging:
+	--> AWS charges for Elastic IP usage based on how and when the IP is utilized:
+
+	# Free of Charge:
+	-->
+	The first Elastic IP associated with a running EC2 instance is free. This helps users maintain a stable IP 
+	address for their instance at no extra cost.
+	
+	# Charges Apply When:
+
+	1) Unattached Elastic IP: 
+	--> If the Elastic IP is allocated but not associated with a running instance 
+	    (e.g., it's associated with a stopped instance or not associated with any instance), AWS charges an 
+		hourly fee. This incentivizes users to release unused Elastic IPs to conserve public IP addresses.
+	2) Multiple Elastic IPs: 
+	--> If you have more than one Elastic IP associated with a running instance, AWS charges for each additional 
+	    Elastic IP beyond the first.
+	
+	#Additional Charges:
+
+	AWS may also charge a fee if you remap (reassociate) an Elastic IP address more than 100 times in a month.
+	
+	## Summary
+	--> Elastic IPs provide a flexible and consistent public IP address for AWS EC2 instances. They are free 
+	    when used efficiently, but AWS imposes charges when Elastic IPs are underutilized or excessively 
+		reassigned, encouraging best practices in resource management.
+		
+-----------------------------------------------------------------------------------------------------------------
+
+### EBS(Elastic Block Storage):
+-->
+	Amazon Elastic Block Store (EBS) is a scalable and high-performance block storage service designed for use 
+	with Amazon EC2 instances. EBS provides persistent, durable, and low-latency storage volumes that can be 
+	attached to EC2 instances, allowing you to store data even after the instance is terminated.
+
+	# How EBS Works
+	1) EBS Volumes: When you create an EBS volume, it functions as a virtual hard drive for your EC2 instance. 
+					You can choose different types of volumes (e.g., SSD or HDD) based on your performance and 
+					cost requirements.
+	
+	2) Persistence: EBS volumes are persistent, meaning the data remains intact even when the associated EC2 
+					instance is stopped or terminated.
+					
+	3) Snapshots: EBS allows you to take point-in-time snapshots of your volumes, which are stored in Amazon S3. 
+				  Snapshots can be used for backups or to create new volumes.
+	
+	4) Scalability: EBS volumes can be resized without downtime, allowing you to adjust storage capacity as your 
+				    needs evolve.
+	
+	#Alternatives to EBS
+	
+	1) Instance Store: An alternative to EBS is EC2 Instance Store, which provides temporary storage directly 
+					   attached to the physical server hosting the EC2 instance. Unlike EBS, instance store data 
+					   is ephemeral and lost when the instance is stopped or terminated.
+	
+	2) Amazon S3: For object storage needs, Amazon S3 is an alternative that offers scalable storage for data that 
+				  doesn't require the block-level performance of EBS.
+	
+	# EBS Costing
+	EBS pricing depends on the type of volume and usage:
+	Volume Types:
+
+	1) General Purpose SSD (gp3/gp2): Designed for a balance of price and performance, suitable for most 
+									  workloads.
+	
+	2) Provisioned IOPS SSD (io1/io2): High-performance volumes designed for I/O-intensive applications.
+	
+	3) Throughput Optimized HDD (st1): Designed for large, sequential workloads like big data or log processing.
+	
+	4) Cold HDD (sc1): Cost-effective storage for infrequently accessed data.
+	
+	
+	#Cost Factors:
+
+	1) Storage Cost: Charged per GB of provisioned storage per month.
+	2) IOPS: For Provisioned IOPS volumes, you pay for the amount of IOPS you provision.
+	3) Snapshots: Charged per GB-month for the data stored in snapshots.
+	4) Data Transfer: Inbound data transfer is generally free, but outbound data transfer may incur costs.
+	
+	## Free Tier for EBS
+	--> Under the AWS Free Tier, new customers receive the following EBS benefits:
+
+		30 GB of EBS General Purpose SSD (gp2) or Magnetic (standard) storage.
+		2 million I/O requests with EBS General Purpose SSD (gp2) storage.
+		Snapshot Storage: 1 GB of snapshot storage for free.
+		These free tier benefits are available for the first 12 months after signing up for AWS.
+
+	## Summary
+	--> Amazon EBS provides persistent and scalable block storage for EC2 instances, offering various volume 
+		types to suit different performance and cost needs. It is commonly used for applications requiring high 
+		availability and reliability of data. Alternatives like Instance Store or Amazon S3 can be considered 
+		depending on your use case, and the AWS Free Tier offers a limited amount of free EBS storage and 
+		snapshot usage for new customers.
+	
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to connect a non-root EBS to a directory of an instance?
+-->
+									A] AWS management console
+	1) First navigate to aws management console 'EC2 dashboard > Elastic Block Storage' section
+	2) Select the volume you want to attach, then click Actions and select Attach Volume
+	3) Choose the instance to which you want to attach the volume and select the appropriate device name 
+	   (e.g., /dev/xvdf). Click attach
+											OR 
+										B] AWS CLI
+	1) `aws ec2 attach-volume --volume-id <volume-id> --instance-id <instance-id> --device /dev/sdf`
+	
+	4) SSH into your instance and run the following command to identify the newly attached volume:
+	   `lsblk`
+	   You should see a new block device (e.g., /dev/xvdf).
+	5) Create a Filesystem on the EBS Volume:
+	   If the volume is new and doesn't have a filesystem, create one. You can use mkfs to format the volume 
+	   with a file system:
+	   `sudo mkfs -t ext4 /dev/xvdf`
+	6) Create a Mount Point:
+	   `sudo mkdir /mnt/mydata`
+	7) Mount the EBS Volume to the Directory:
+	   `sudo mount /dev/xvdf /mnt/mydata`
+	
+	
+	## !! Note: AFTER REBOOT THE VOLUME IS DEMOUNTED !! ##
+	Soln -->
+	To ensure the EBS volume is mounted automatically after a reboot, you can edit the /etc/fstab file:
+	
+	1) Open /etc/fstab in a text editor:
+	`sudo nano /etc/fstab`
+	
+	2) Add the following line at the end of the file:
+	`/dev/xvdf /mnt/mydata ext4 defaults,nofail 0 2`
+	
+	3) Save and exit the editor.
+	
+	## Verify the Mount ##
+	--> df -h
+	
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to increase a size of an EBS volume?
+-->
+	1. Modify the Volume Size
+	AWS Console:
+	Go to EC2 Dashboard > Volumes.
+	Select the volume, click Actions > Modify Volume.
+	Increase the Size and click Modify.
+	
+				OR
+				
+	AWS CLI:
+	`aws ec2 modify-volume --volume-id <volume-id> --size <new-size-in-GB>`
+	
+	2. Monitor the Volume Modification Status
+	Check status:
+	`aws ec2 describe-volumes-modifications --volume-id <volume-id>`
+	Wait until modification-state is completed.
+	
+	3. Extend the Filesystem on the Instance
+	Check the filesystem:
+	`lsblk`
+	
+	For ext4/xfs filesystems:
+	`sudo resize2fs /dev/xvdf`  # For ext4
+	`sudo xfs_growfs /`         # For xfs (use `/` for root volume)
+	Replace /dev/xvdf with your device name.
+	
+	4. Verify the Resize
+	Confirm the new size:
+	`df -h`
+	
+	# Notes:
+	Downtime: This operation usually requires no downtime.
+	Snapshot: Consider creating a snapshot before resizing as a backup.
+	
+-----------------------------------------------------------------------------------------------------------------
+
+### WE CAN ONLY INCREASE THE SIZE OF EBS. WE CAN NEVER DECREASE THE SIZE OF EBS ###
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. What to do if we can't decrease the size of EBS?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to increase the size of root ebs?
+-->
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Q. How to attach single EBS volume to multiple instances?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. What is Throughput and IOPs in EBS?
+-->
+	
+-----------------------------------------------------------------------------------------------------------------
+
+Q. Types of EBS volumes?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. When to use whcih EBS volume based on AWS official EBS information website?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Snapshot in AWS:
+-->
+	
+-----------------------------------------------------------------------------------------------------------------
+
+## VOLUMES AND SNAPSHOTS ARE REGION SPECIFIC ##
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to automatically backup Volumes/Instances into snapshot using lifecycle manager?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+### AMI recycle bin
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to copy snapshot from one region to another?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+## EBS volume and snapshot encryption 
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to by default turn on encryption for the creation of EBS volumes?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+## Fast snapshot restore 
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Amazon Machine Image(AMI):
+-->
+	
+-----------------------------------------------------------------------------------------------------------------
+
+Q. How to share your AMI with others?
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Elastic Load balancer
+-->
+	
+-----------------------------------------------------------------------------------------------------------------
+
+## Problems with Classic Load Balancer
+-->
+
+-----------------------------------------------------------------------------------------------------------------
+
+### Autoscaling
+-->
+
+-----------------------------------------------------------------------------------------------------------------
